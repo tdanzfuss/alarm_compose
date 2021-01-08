@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+    redis: 
+        image: arm32v7/redis
+        command: redis-server --requirepass D@nzfuss123
+        ports: 
+            - "6370:6379"
+    nginx:
+        image: arm32v7/nginx
+        ports: 
+            - "80:80"
+        volumes:
+            - image_cache:/usr/share/nginx/html/images/
+    botInterface:
+        image: tdanzfuss/alarmnotificationservice:armv7
+    alarmDetect:
+        image: tdanzfuss/alarm_detection:latest
+        command: ["python3","./alarm_detect.py","--privileged"]
+        privileged: true
+    alarmCapture:
+        image: tdanzfuss/alarm_capture:latest
+        volumes: 
+            - image_cache:/var/www/html/images/
+volumes:
+    image_cache: {}
+            
