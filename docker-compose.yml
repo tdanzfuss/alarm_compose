@@ -13,14 +13,25 @@ services:
             - image_cache:/usr/share/nginx/html/images/
     botInterface:
         image: tdanzfuss/alarmnotificationservice:armv7
+        volumes:
+           - /home/pi/cf/alarmnotification/:/etc/alarm-config/
+        environment:
+          - alarm_config_location=/etc/alarm-config/appsettings.json
     alarmDetect:
         image: tdanzfuss/alarm_detection:latest
         command: ["python3","./alarm_detect.py","--privileged"]
         privileged: true
+        volumes:
+          - /home/pi/cf/alarmnotification/:/etc/alarm-config/
+        environment:
+          - alarm_config_location=/etc/alarm-config/appsettings.json
     alarmCapture:
         image: tdanzfuss/alarm_capture:latest
         volumes: 
             - image_cache:/var/www/html/images/
+            - /home/pi/cf/alarmnotification/:/etc/alarm-config/
+        environment:
+            - alarm_config_location=/etc/alarm-config/appsettings.json
 volumes:
     image_cache: {}
             
