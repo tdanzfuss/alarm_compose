@@ -2,9 +2,11 @@ version: "3.9"
 services:
     redis: 
         image: arm32v7/redis
-        command: redis-server --requirepass D@nzfuss123
+        command: redis-server --requirepass D@nzfuss123 --appendonly yes
         ports: 
             - "6370:6379"
+        volumes:
+            - /usr/share/redis/:/data/
     nginx:
         image: arm32v7/nginx
         ports: 
@@ -32,6 +34,14 @@ services:
             - /home/pi/cf/alarmnotification/:/etc/alarm-config/
         environment:
             - alarm_config_location=/etc/alarm-config/appsettings.json
+    alarmOpenCV:
+       image: tdanzfuss/alarm_opencv:latest
+       volumes: 
+           - image_cache:/var/www/html/images/
+           - /home/pi/cf/alarmnotification/:/etc/alarm-config/
+       environment:
+           - alarm_config_location=/etc/alarm-config/appsettings.json
+
 volumes:
     image_cache: {}
             
