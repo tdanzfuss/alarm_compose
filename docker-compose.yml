@@ -15,12 +15,16 @@ services:
             - image_cache:/usr/share/nginx/html/images/
     botInterface:
         image: tdanzfuss/alarmnotificationservice:armv7
+        depends_on: 
+           - "redis"
         volumes:
            - /home/pi/cf/alarmnotification/:/etc/alarm-config/
         environment:
           - alarm_config_location=/etc/alarm-config/appsettings.json
     alarmDetect:
         image: tdanzfuss/alarm_detection:latest
+        depends_on: 
+          - "redis"
         command: ["python3","./alarm_detect.py","--privileged"]
         privileged: true
         volumes:
@@ -29,6 +33,8 @@ services:
           - alarm_config_location=/etc/alarm-config/appsettings.json
     alarmCapture:
         image: tdanzfuss/alarm_capture:latest
+        depends_on: 
+            - "redis"
         volumes: 
             - image_cache:/var/www/html/images/
             - /home/pi/cf/alarmnotification/:/etc/alarm-config/
@@ -36,6 +42,19 @@ services:
             - alarm_config_location=/etc/alarm-config/appsettings.json
     alarmOpenCV:
        image: tdanzfuss/alarm_opencv:latest
+       depends_on: 
+           - "redis"
+       volumes: 
+           - image_cache:/var/www/html/images/
+           - /home/pi/cf/alarmnotification/:/etc/alarm-config/
+       environment:
+           - alarm_config_location=/etc/alarm-config/appsettings.json
+    alarmBuzzer:
+       image: tdanzfuss/alarm_buzzer:latest
+       command: ["python3","./alarm_buzzer.py","--privileged"]
+       depends_on: 
+           - "redis"
+       privileged: true
        volumes: 
            - image_cache:/var/www/html/images/
            - /home/pi/cf/alarmnotification/:/etc/alarm-config/
